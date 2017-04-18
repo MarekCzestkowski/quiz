@@ -35,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listViewQuiz);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
 
         String url = "http://quiz.o2.pl/api/v1/quizzes/0/100";
