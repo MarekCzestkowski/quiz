@@ -3,6 +3,8 @@ package com.czestkowski.quizz;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.czestkowski.quizz.models.QuizDetailModel;
 import com.czestkowski.quizz.models.QuizModel;
 
 import org.json.JSONArray;
@@ -29,9 +32,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MainActivity extends AppCompatActivity {
     //    TextView a = (TextView)findViewById(R.id.a);
     private ListView listView;
+    String url = "http://quiz.o2.pl/api/v1/quizzes/0/100";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,34 +45,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        String url = "http://quiz.o2.pl/api/v1/quizzes/0/100";
 //        Json.getJson(url);
-        try {
-            URL url1 = new URL(url);
-            new DownloadFilesTask().execute(url1);
-        } catch (MalformedURLException mue) {
-            mue.printStackTrace();
-        }
- //       return null;
-
+        //            URL url1 = new URL(url);
+        new DownloadFilesTask().execute(url);
+        //       return null;
 
 
     }
-    private class DownloadFilesTask extends AsyncTask<URL, Integer, List<QuizModel>> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-//           dialog.show();
-        }
+    public class DownloadFilesTask extends AsyncTask<String, Integer, List<QuizModel>> {
 
-        protected List<QuizModel> doInBackground(URL... urls) {
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+////           dialog.show();
+//        }
+
+        protected List<QuizModel> doInBackground(String... parameters) {
             URL url;
             InputStream is = null;
             BufferedReader br;
             String line;
             try {
-                url = new URL("http://quiz.o2.pl/api/v1/quizzes/0/100");
+                url = new URL(parameters[0]);
                 is = url.openStream();  // throws an IOException
                 br = new BufferedReader(new InputStreamReader(is));
 
@@ -79,23 +79,51 @@ public class MainActivity extends AppCompatActivity {
                 String finalJson = buffer.toString();
 
                 JSONObject parentObject = new JSONObject(finalJson);
-                JSONArray parentArray = parentObject.getJSONArray("items");
+                if (parameters[0].equals("http://quiz.o2.pl/api/v1/quizzes/0/100")) {
+                    //if entering for the first time
+
+                    JSONArray parentArray = parentObject.getJSONArray("items");
 
 //                StringBuffer finalBufferedData = new StringBuffer();
-                List<QuizModel> quizModelList = new ArrayList<>();
-                for (int i = 0; i < parentArray.length(); i++) {
-                    JSONObject finalObject = parentArray.getJSONObject(i);
-                    QuizModel quizModel = new QuizModel();
-                    quizModel.setTitle(finalObject.getString("title"));
-                    quizModel.setId(finalObject.getInt("id"));
-                    quizModelList.add(quizModel);
+                    List<QuizModel> quizModelList = new ArrayList<>();
+                    for (int i = 0; i < parentArray.length(); i++) {
+                        JSONObject finalObject = parentArray.getJSONObject(i);
+                        QuizModel quizModel = new QuizModel();
+                        quizModel.setTitle(finalObject.getString("title"));
+                        quizModel.setId(finalObject.getString("id"));
+                        quizModel.setPhoto(finalObject.getJSONObject("mainPhoto").getString("url"));
+                        quizModelList.add(quizModel);
+                    }
+
+
+                    return quizModelList;
+                } else {
+                    //entering from the QuizActivity with the link containg id
+                    JSONArray parentArray = parentObject.getJSONArray("questions");
+                    List<QuizDetailModel> quizDetailModelList = new ArrayList<>();
+                    List<String> textList = new ArrayList<>();
+                    String x;
+                    QuizDetailModel quizDetailModel = new QuizDetailModel();
+
+                    for (int j = 0; j < parentArray.length(); j++) {
+                        JSONObject finalObject = parentArray.getJSONObject(j);
+                        x=finalObject.getString("text");
+                        textList.add(x);
+//                        List<QuizDetailModel.>
+//                        quizDetailModelList.add(quizDetailModel);
+                    }
+                    quizDetailModel.setTextList(textList);
+
+                    Intent it = new Intent(MainActivity.this, QuizActivity.class);
+//                    it.putExtra("lista", (Parcelable) quizDetailModelList);
+//
+//                    return quizDetailModelList;
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("value", quizDetailModel);
+                    it.putExtras(bundle);
+                    startActivity(it);
                 }
 
-
-                return quizModelList;
-
-                //MainActivity.tekst(finalBufferedData.toString());
-//                List<MovieModel> movieModelList = new ArrayList<>();
 
             } catch (MalformedURLException mue) {
                 mue.printStackTrace();
@@ -124,16 +152,29 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         QuizModel quizmodel = result.get(position); // getting the model
-                        //                   Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                        //                  intent.putExtra("movieModel", new Gson().toJson(movieModel)); // converting model json into string type and sending it via intent
-                        //                  startActivity(intent);
+//                        quizmodel.getId();
+                        // Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+                        Intent intent = new Intent();
+                        intent.setClass(getApplicationContext(), QuizActivity.class);
+                        String x = quizmodel.getId();
+//                        intent.putExtra("ID", x); // converting ID into string type and sending it via intent
+//                        startActivity(intent);
+
+                        String link = "http://quiz.o2.pl/api/v1/quiz/" + x + "/0";
+                        new DownloadFilesTask().execute(link);
+//                        doInBackground(x);
                     }
                 });
             } else {
-                Toast.makeText(getApplicationContext(), "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "server not responding, please check connection", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+//    Intent intent_name = new Intent();
+//    intent_name.setClass(getApplicationContext(),DestinationClassName.class);
+//    startActivity(intent_name);
+
     public class QuizAdapter extends ArrayAdapter {
 
         private List<QuizModel> quizModelList;
@@ -155,9 +196,12 @@ public class MainActivity extends AppCompatActivity {
                 convertView = inflater.inflate(R.layout.single_row, null);
             }
             TextView title;
+//            ImageView imageView;
             title = (TextView) convertView.findViewById(R.id.title);
+//            imageView= (ImageView) convertView.findViewById(R.id.imageView);
             title.setText(quizModelList.get(position).getTitle());
             return convertView;
         }
     }
+
 }

@@ -1,17 +1,20 @@
 package com.czestkowski.quizz.models;
 
-/**
- * Created by Overlord on 2017-04-13.
- */
+
 public class QuizModel {
     private String title;
-    private int id;
+    private String photo;
+    private String id;
 
-    public int getId() {
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -21,6 +24,10 @@ public class QuizModel {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
 }
