@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             quizModelList = objects;
             this.resource = resource;
             inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
