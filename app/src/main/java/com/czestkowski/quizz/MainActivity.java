@@ -98,26 +98,35 @@ public class MainActivity extends AppCompatActivity {
 
                     return quizModelList;
                 } else {
-                    //entering from the QuizActivity with the link containg id
+                    //entering with the link containg id
                     JSONArray parentArray = parentObject.getJSONArray("questions");
+
                     List<QuizDetailModel> quizDetailModelList = new ArrayList<>();
                     List<String> textList = new ArrayList<>();
+                    List<String> answersForOneQ = new ArrayList<>();
+                    List<List<String>> answerList = new ArrayList<>();
                     String x;
                     QuizDetailModel quizDetailModel = new QuizDetailModel();
 
                     for (int j = 0; j < parentArray.length(); j++) {
                         JSONObject finalObject = parentArray.getJSONObject(j);
-                        x=finalObject.getString("text");
+                        x = finalObject.getString("text");
                         textList.add(x);
+                        for (int k = 0; k < finalObject.getJSONArray("answers").length(); k++) {
+                            x= finalObject.getJSONArray("answers").getJSONObject(k).getString("text");
+                            answersForOneQ.add(x);
+                        }
+                        answerList.add(answersForOneQ);
+
 //                        List<QuizDetailModel.>
 //                        quizDetailModelList.add(quizDetailModel);
                     }
+
+                    quizDetailModel.setAnswerList(answerList);
                     quizDetailModel.setTextList(textList);
 
                     Intent it = new Intent(MainActivity.this, QuizActivity.class);
-//                    it.putExtra("lista", (Parcelable) quizDetailModelList);
-//
-//                    return quizDetailModelList;
+
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("value", quizDetailModel);
                     it.putExtras(bundle);
