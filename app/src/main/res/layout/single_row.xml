@@ -5,8 +5,8 @@
     android:background="#466f26">
 
     <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="221dp"
         android:layout_gravity="left">
 
         <ImageView
@@ -22,13 +22,25 @@
             android:layout_height="match_parent">
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="199dp"
+            android:layout_height="140dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Najlepszy Wynik:\n0"
+            android:id="@+id/textViewBestScore"
+            android:layout_gravity="top|bottom|right"
+            android:gravity="center_vertical|center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="73dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/title"
+            android:textColor="#ffff"
+            android:layout_marginLeft="7dp"
+            android:layout_gravity="left|bottom" />
     </FrameLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/title"
-        android:textColor="#ffff" />
 </LinearLayout>

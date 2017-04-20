@@ -2,6 +2,7 @@ package com.czestkowski.quizz;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,7 +34,9 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    //    TextView a = (TextView)findViewById(R.id.a);
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    int score;
     private ListView listView;
     String url = "http://quiz.o2.pl/api/v1/quizzes/0/100";
 
@@ -42,14 +45,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listViewQuiz);
         super.onCreate(savedInstanceState);
+        sharedPreferences = getSharedPreferences("czestkowski.com.Quizz", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+//        score = sharedPreferences.getInt("BestScore", 0);
 
-
-//        Json.getJson(url);
-        //            URL url1 = new URL(url);
         new DownloadFilesTask().execute(url);
         //       return null;
-
-
     }
 
     public class DownloadFilesTask extends AsyncTask<String, Integer, List<QuizModel>> {
@@ -85,12 +86,17 @@ public class MainActivity extends AppCompatActivity {
 
 //                StringBuffer finalBufferedData = new StringBuffer();
                     List<QuizModel> quizModelList = new ArrayList<>();
+
+//                    String[] scores = new String[quizModelList.size()];
+
                     for (int i = 0; i < parentArray.length(); i++) {
                         JSONObject finalObject = parentArray.getJSONObject(i);
                         QuizModel quizModel = new QuizModel();
+//                        scores[i] = finalObject.getString("id");
                         quizModel.setTitle(finalObject.getString("title"));
                         quizModel.setId(finalObject.getString("id"));
                         quizModel.setPhoto(finalObject.getJSONObject("mainPhoto").getString("url"));
+                        quizModel.setScore(sharedPreferences.getInt(finalObject.getString("id"), 0));
                         quizModelList.add(quizModel);
                     }
 
@@ -107,19 +113,9 @@ public class MainActivity extends AppCompatActivity {
                     List<Integer> correctAnswerList = new ArrayList<>();
                     String x;
                     int correctAnswerNumber;
-                    String urlToPhoto;
                     QuizDetailModel quizDetailModel = new QuizDetailModel();
-                    ArrayList tab[]=new ArrayList[parentArray.length()];
 
-//                    for(int m=0; m< parentArray.length(); m++){
-//                        tab[m] = new ArrayList();
-//                    }
-
-
-                    int z=0;
                     for (int j = 0; j < parentArray.length(); j++) {
-//                        List<String> lista = new ArrayList<>();
-
                         JSONObject finalObject = parentArray.getJSONObject(j);
                         x = finalObject.getString("text");
                         textList.add(x);
@@ -134,10 +130,8 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 l++;
                             }
-//                            tab[j].add(x);
                             answersForOneQ.add(x);
                         }
-//                        ArrayList<>  =new ArrayList<>(Arrays.asList(tab[j]));
                         answerList.add(answersForOneQ);
                     }
 
@@ -181,17 +175,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         QuizModel quizmodel = result.get(position); // getting the model
-//                        quizmodel.getId();
-                        // Intent intent = new Intent(MainActivity.this, QuizActivity.class);
                         Intent intent = new Intent();
                         intent.setClass(getApplicationContext(), QuizActivity.class);
                         String x = quizmodel.getId();
-//                        intent.putExtra("ID", x); // converting ID into string type and sending it via intent
-//                        startActivity(intent);
 
                         String link = "http://quiz.o2.pl/api/v1/quiz/" + x + "/0";
                         new DownloadFilesTask().execute(link);
-//                        doInBackground(x);
                     }
                 });
             } else {
@@ -215,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
             quizModelList = objects;
             this.resource = resource;
             inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
@@ -226,10 +214,14 @@ public class MainActivity extends AppCompatActivity {
                 convertView = inflater.inflate(R.layout.single_row, null);
             }
             TextView title;
-//            ImageView imageView;
+            TextView textViewBestScore;
+            textViewBestScore = (TextView) convertView.findViewById(R.id.textViewBestScore);
             title = (TextView) convertView.findViewById(R.id.title);
 //            imageView= (ImageView) convertView.findViewById(R.id.imageView);
             title.setText(quizModelList.get(position).getTitle());
+//            TODO: setText for best score
+            textViewBestScore.setText("Najlepszy Wynik:\n " + quizModelList.get(position).getScore());
+//            textViewBestScore.setText();
             return convertView;
         }
     }

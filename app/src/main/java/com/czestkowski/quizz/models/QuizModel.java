@@ -1,10 +1,31 @@
 package com.czestkowski.quizz.models;
 
 
+import android.content.SharedPreferences;
+
 public class QuizModel {
+//    SharedPreferences sharedPreferences;
+//    SharedPreferences.Editor editor  ;
+
     private String title;
-    private String photo;
+    private String photo; //URL of the photo
     private String id;
+    private int score;
+
+//    private int score = sharedPreferences.getInt("BestScore", 0);
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        if (score > this.score) {
+            this.score = score;
+//            editor.putInt("BestScore", score);
+//            editor.commit();
+        }
+    }
+
 
     public String getPhoto() {
         return photo;

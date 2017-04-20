@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +16,6 @@ import com.czestkowski.quizz.models.QuizDetailModel;
 import com.czestkowski.quizz.models.QuizModel;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +48,6 @@ public class QuizActivity extends MainActivity {
 
         ImageView im = (ImageView) findViewById(R.id.imageView2);
         new DownloadImageTask(im).execute(model.getUrlToPhoto());
-
         questionsList = new ArrayList<>(model.getTextList());
         answersList = new ArrayList<>(model.getAnswerList());
         answersForOneQ = new ArrayList<>(answersList.get(0));
@@ -205,6 +201,7 @@ public class QuizActivity extends MainActivity {
         if (questionsList.size() < counter + 1) {
             Intent it = new Intent(QuizActivity.this, FinalActivity.class);
             it.putExtra("score", score);
+
             startActivity(it);
         }
         answersForOneQ = new ArrayList<>(answersList.get(counter));
