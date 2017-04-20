@@ -30,6 +30,11 @@ public class QuizActivity extends MainActivity {
     Button button2;
     Button button3;
     int score = 0;
+    int counter = 0;
+    List<List<String>> answersList;
+    List<String> questionsList;
+    List<String> answersForOneQ;
+    List<Integer> numberOfCorrectAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,75 +48,79 @@ public class QuizActivity extends MainActivity {
         button2 = (Button) findViewById(R.id.button2);
         button3 = (Button) findViewById(R.id.button3);
         QuizDetailModel model = (QuizDetailModel) getIntent().getSerializableExtra("value");
-        String urel = model.getUrlToPhoto();
+
         ImageView im = (ImageView) findViewById(R.id.imageView2);
-        new DownloadImageTask(im).execute(urel);
+        new DownloadImageTask(im).execute(model.getUrlToPhoto());
 
-        List<String> questionsList = new ArrayList<>(model.getTextList());
-        List<List<String>> answersList = new ArrayList<>(model.getAnswerList());
-        List<String> answersForOneQ = new ArrayList<>(answersList.get(0));
-        final List<Integer> numberOfCorrectAnswer = new ArrayList<>(model.getListNumberOfCorrectAnswer());
+        questionsList = new ArrayList<>(model.getTextList());
+        answersList = new ArrayList<>(model.getAnswerList());
+        answersForOneQ = new ArrayList<>(answersList.get(0));
+        numberOfCorrectAnswer = new ArrayList<>(model.getListNumberOfCorrectAnswer());
 
-        askQuestion(questionsList.get(0), numberOfCorrectAnswer.get(0), answersForOneQ.get(0), answersForOneQ.get(1), answersForOneQ.get(2), answersForOneQ.get(3));
+        askQuestion(counter);
 
 
         button0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 0;
-                if (numberOfCorrectAnswer.get(0) == x) {
+                if (numberOfCorrectAnswer.get(counter) == x) {
 //                    updateQuestion();
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
                     score++;
                 } else {
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
 //                    updateQuestion();
                 }
+                counter++;
+                askQuestion(counter);
+
+
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 1;
-                if (numberOfCorrectAnswer.get(0) == x) {
-//                    updateQuestion();
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                if (numberOfCorrectAnswer.get(counter) == x) {
+                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
                     score++;
 
                 } else {
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
+                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
                 }
+                counter++;
+                askQuestion(counter);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 2;
-                if (numberOfCorrectAnswer.get(0) == x) {
-//                    updateQuestion();
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                if (numberOfCorrectAnswer.get(counter) == x) {
+                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
                     score++;
 
                 } else {
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
+                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
                 }
+                counter++;
+                askQuestion(counter);
             }
         });
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 3;
-                if (numberOfCorrectAnswer.get(0) == x) {
-//                    updateQuestion();
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                if (numberOfCorrectAnswer.get(counter) == x) {
+                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
                     score++;
 
                 } else {
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
+                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
                 }
+                counter++;
+                askQuestion(counter);
             }
         });
 
@@ -191,16 +200,24 @@ public class QuizActivity extends MainActivity {
 //        return ret;
 //    }
 
-    public void askQuestion(String q, Integer x, String a, String b, String c, String d) {
+    public void askQuestion(int counter) {
+
+        if (questionsList.size() < counter + 1) {
+            Intent it = new Intent(QuizActivity.this, FinalActivity.class);
+            it.putExtra("score", score);
+            startActivity(it);
+        }
+        answersForOneQ = new ArrayList<>(answersList.get(counter));
+
 
 // x - number of the correct answer
-        textView.setText(q);
-        button0.setText(a);
-        button1.setText(b);
-        button2.setText(c);
-        button3.setText(d);
+        textView.setText(questionsList.get(counter));
+        button0.setText(answersForOneQ.get(0));
+        button1.setText(answersForOneQ.get(1));
+        button2.setText(answersForOneQ.get(2));
+        button3.setText(answersForOneQ.get(3));
 
-
+//startActivity
 //        Toast.makeText(QuizActivity.this, x, Toast.LENGTH_SHORT).show();
 
 
