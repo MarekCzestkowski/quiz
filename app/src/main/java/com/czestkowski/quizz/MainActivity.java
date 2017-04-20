@@ -3,8 +3,6 @@ package com.czestkowski.quizz;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -106,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     List<String> answersForOneQ = new ArrayList<>();
                     List<List<String>> answerList = new ArrayList<>();
                     String x;
+                    String urlToPhoto;
                     QuizDetailModel quizDetailModel = new QuizDetailModel();
 
                     for (int j = 0; j < parentArray.length(); j++) {
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
                     quizDetailModel.setAnswerList(answerList);
                     quizDetailModel.setTextList(textList);
-
+                    quizDetailModel.setUrlToPhoto(parentObject.getJSONObject("mainPhoto").getString("url"));
                     Intent it = new Intent(MainActivity.this, QuizActivity.class);
 
                     Bundle bundle = new Bundle();
@@ -175,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(getApplicationContext(), "server not responding, please check connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "server not responding, please check the connection", Toast.LENGTH_SHORT).show();
             }
         }
     }
