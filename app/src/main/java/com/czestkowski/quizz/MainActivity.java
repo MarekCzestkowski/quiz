@@ -103,7 +103,9 @@ public class MainActivity extends AppCompatActivity {
                     List<String> textList = new ArrayList<>();
                     List<String> answersForOneQ = new ArrayList<>();
                     List<List<String>> answerList = new ArrayList<>();
+                    List<Integer> correctAnswerList = new ArrayList<>();
                     String x;
+                    int correctAnswerNumber;
                     String urlToPhoto;
                     QuizDetailModel quizDetailModel = new QuizDetailModel();
 
@@ -111,8 +113,18 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject finalObject = parentArray.getJSONObject(j);
                         x = finalObject.getString("text");
                         textList.add(x);
+                        int l = 0;
                         for (int k = 0; k < finalObject.getJSONArray("answers").length(); k++) {
-                            x= finalObject.getJSONArray("answers").getJSONObject(k).getString("text");
+                            x = finalObject.getJSONArray("answers").getJSONObject(k).getString("text");
+                            if (finalObject.getJSONArray("answers").getJSONObject(k).has("isCorrect")) {
+                                correctAnswerNumber = l;
+                                correctAnswerList.add(correctAnswerNumber);
+//                            } else if (finalObject.getJSONArray("answers").getJSONObject(k).getInt("isCorrect") == 1) {
+//                                correctAnswerNumber = l;
+//                                correctAnswerList.add(correctAnswerNumber);
+                            } else {
+                                l++;
+                            }
                             answersForOneQ.add(x);
                         }
                         answerList.add(answersForOneQ);
@@ -121,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 //                        quizDetailModelList.add(quizDetailModel);
                     }
 
+                    quizDetailModel.setListNumberOfCorrectAnswer(correctAnswerList);
                     quizDetailModel.setAnswerList(answerList);
                     quizDetailModel.setTextList(textList);
                     quizDetailModel.setUrlToPhoto(parentObject.getJSONObject("mainPhoto").getString("url"));
