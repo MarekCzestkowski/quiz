@@ -16,7 +16,8 @@
         android:text="gratulacje"
         android:id="@+id/congratsTextView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center" />
 
     <Button
         android:layout_width="match_parent"

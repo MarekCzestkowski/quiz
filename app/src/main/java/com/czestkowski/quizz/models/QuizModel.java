@@ -1,7 +1,6 @@
 package com.czestkowski.quizz.models;
 
 
-import android.content.SharedPreferences;
 
 public class QuizModel {
 //    SharedPreferences sharedPreferences;
@@ -11,8 +10,6 @@ public class QuizModel {
     private String photo; //URL of the photo
     private String id;
     private int score;
-
-//    private int score = sharedPreferences.getInt("BestScore", 0);
 
     public int getScore() {
         return score;

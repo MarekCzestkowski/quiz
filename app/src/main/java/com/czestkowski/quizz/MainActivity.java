@@ -29,14 +29,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    int score;
+//    int score;
     private ListView listView;
     String url = "http://quiz.o2.pl/api/v1/quizzes/0/100";
 
@@ -48,18 +47,10 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("czestkowski.com.Quizz", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 //        score = sharedPreferences.getInt("BestScore", 0);
-
         new DownloadFilesTask().execute(url);
-        //       return null;
     }
 
     public class DownloadFilesTask extends AsyncTask<String, Integer, List<QuizModel>> {
-
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-////           dialog.show();
-//        }
 
         protected List<QuizModel> doInBackground(String... parameters) {
             URL url;
@@ -68,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             String line;
             try {
                 url = new URL(parameters[0]);
-                is = url.openStream();  // throws an IOException
+                is = url.openStream();
                 br = new BufferedReader(new InputStreamReader(is));
 
                 StringBuffer buffer = new StringBuffer();
@@ -83,16 +74,11 @@ public class MainActivity extends AppCompatActivity {
                     //if entering for the first time
 
                     JSONArray parentArray = parentObject.getJSONArray("items");
-
-//                StringBuffer finalBufferedData = new StringBuffer();
                     List<QuizModel> quizModelList = new ArrayList<>();
-
-//                    String[] scores = new String[quizModelList.size()];
 
                     for (int i = 0; i < parentArray.length(); i++) {
                         JSONObject finalObject = parentArray.getJSONObject(i);
                         QuizModel quizModel = new QuizModel();
-//                        scores[i] = finalObject.getString("id");
                         quizModel.setTitle(finalObject.getString("title"));
                         quizModel.setId(finalObject.getString("id"));
                         quizModel.setPhoto(finalObject.getJSONObject("mainPhoto").getString("url"));
@@ -106,14 +92,28 @@ public class MainActivity extends AppCompatActivity {
                     //entering with the link containg id
                     JSONArray parentArray = parentObject.getJSONArray("questions");
 
-                    List<QuizDetailModel> quizDetailModelList = new ArrayList<>();
                     List<String> textList = new ArrayList<>();
-                    List<String> answersForOneQ = new ArrayList<>();
-                    List<List<String>> answerList = new ArrayList<List<String>>();
+                    List<String> answersForOneQ;
+                    List<String> abcd;
+                    List<List<String>> answerList = new ArrayList<>();
+                    List<List<String>> abcdList = new ArrayList<>();
                     List<Integer> correctAnswerList = new ArrayList<>();
                     String x;
+                    String y;
+                    List<String> flagTitle = new ArrayList<>();
+                    List<String> flagContent = new ArrayList<>();
                     int correctAnswerNumber;
                     QuizDetailModel quizDetailModel = new QuizDetailModel();
+                    if (parentObject.has("flagResults")) {
+                        for (int n = 0; n < parentObject.getJSONArray("flagResults").length(); n++) {
+                            JSONObject finalObject2 = parentObject.getJSONArray("flagResults").getJSONObject(n);
+                            x = finalObject2.getString("content"); //getting the flag results
+                            flagContent.add(x);
+                            y = finalObject2.getString("title");
+                            flagTitle.add(y);
+                        }
+                    }
+
 
                     for (int j = 0; j < parentArray.length(); j++) {
                         JSONObject finalObject = parentArray.getJSONObject(j);
@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                         textList.add(x);
                         int l = 0;
                         answersForOneQ = new ArrayList<>();
+                        abcd = new ArrayList<>();
 
                         for (int k = 0; k < finalObject.getJSONArray("answers").length(); k++) {
                             x = finalObject.getJSONArray("answers").getJSONObject(k).getString("text");
@@ -130,8 +131,21 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 l++;
                             }
+                            if (finalObject.getJSONArray("answers").getJSONObject(k).has("flag_answer")) {
+
+                                if (finalObject.getJSONArray("answers").getJSONObject(k).getJSONObject("flag_answer").has("A")) {
+                                    abcd.add("A");
+                                } else if (finalObject.getJSONArray("answers").getJSONObject(k).getJSONObject("flag_answer").has("B")) {
+                                    abcd.add("B");
+                                } else if (finalObject.getJSONArray("answers").getJSONObject(k).getJSONObject("flag_answer").has("C")) {
+                                    abcd.add("C");
+                                } else if (finalObject.getJSONArray("answers").getJSONObject(k).getJSONObject("flag_answer").has("D")) {
+                                    abcd.add("D");
+                                }
+                            }
                             answersForOneQ.add(x);
                         }
+                        abcdList.add(abcd);
                         answerList.add(answersForOneQ);
                     }
 
@@ -139,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
                     quizDetailModel.setAnswerList(answerList);
                     quizDetailModel.setTextList(textList);
                     quizDetailModel.setUrlToPhoto(parentObject.getJSONObject("mainPhoto").getString("url"));
+                    quizDetailModel.setAbcdList(abcdList);
+                    quizDetailModel.setFlagContent(flagContent);
+                    quizDetailModel.setFlagTitle(flagTitle);
+
                     Intent it = new Intent(MainActivity.this, QuizActivity.class);
 
                     Bundle bundle = new Bundle();
@@ -146,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
                     it.putExtras(bundle);
                     startActivity(it);
                 }
-
 
             } catch (MalformedURLException mue) {
                 mue.printStackTrace();
@@ -158,12 +175,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (is != null) is.close();
                 } catch (IOException ioe) {
-                    // nothing to see here
                 }
             }
             return null;
         }
-
 
         protected void onPostExecute(final List<QuizModel> result) {
             super.onPostExecute(result);
@@ -189,20 +204,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    Intent intent_name = new Intent();
-//    intent_name.setClass(getApplicationContext(),DestinationClassName.class);
-//    startActivity(intent_name);
-
     public class QuizAdapter extends ArrayAdapter {
 
         private List<QuizModel> quizModelList;
-        private int resource;
         private LayoutInflater inflater;
 
         public QuizAdapter(Context context, int resource, List<QuizModel> objects) {
             super(context, resource, objects);
             quizModelList = objects;
-            this.resource = resource;
             inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -217,13 +226,9 @@ public class MainActivity extends AppCompatActivity {
             TextView textViewBestScore;
             textViewBestScore = (TextView) convertView.findViewById(R.id.textViewBestScore);
             title = (TextView) convertView.findViewById(R.id.title);
-//            imageView= (ImageView) convertView.findViewById(R.id.imageView);
             title.setText(quizModelList.get(position).getTitle());
-//            TODO: setText for best score
             textViewBestScore.setText("Najlepszy Wynik:\n " + quizModelList.get(position).getScore());
-//            textViewBestScore.setText();
             return convertView;
         }
     }
-
 }

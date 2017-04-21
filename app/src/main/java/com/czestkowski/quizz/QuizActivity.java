@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,12 +33,25 @@ public class QuizActivity extends MainActivity {
     List<String> questionsList;
     List<String> answersForOneQ;
     List<Integer> numberOfCorrectAnswer;
+    List<List<String>> abcdList;
+    List<String> abcdAnswers;
+    List<String> flagContent;
+    List<String> flagTitle;
+    ProgressBar progressBar;
+    int progress = 0;
+
+    int[] abcdValues = new int[4];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        for (int i = 0; i < abcdValues.length; i++) {
+            abcdValues[i] = 0;
+        }
 
         textView = (TextView) findViewById(R.id.textView);
         button0 = (Button) findViewById(R.id.button0);
@@ -52,178 +66,154 @@ public class QuizActivity extends MainActivity {
         answersList = new ArrayList<>(model.getAnswerList());
         answersForOneQ = new ArrayList<>(answersList.get(0));
         numberOfCorrectAnswer = new ArrayList<>(model.getListNumberOfCorrectAnswer());
+        abcdList = new ArrayList<>(model.getAbcdList());
+        abcdAnswers = new ArrayList<>();
+        flagContent = new ArrayList<>(model.getFlagContent());
+        flagTitle = new ArrayList<>(model.getFlagTitle());
 
         askQuestion(counter);
-
 
         button0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 0;
-                if (numberOfCorrectAnswer.get(counter) == x) {
-//                    updateQuestion();
-                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
-                    score++;
+                if (numberOfCorrectAnswer.size() != 0) {
+                    if (numberOfCorrectAnswer.get(counter) == x) {
+                        Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
+                        score++;
+                    } else {
+                        Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    }
+                    counter++;
+                    askQuestion(counter);
                 } else {
-                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
+                    countAbcd(x);
                 }
-                counter++;
-                askQuestion(counter);
-
-
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 1;
-                if (numberOfCorrectAnswer.get(counter) == x) {
-                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
-                    score++;
+                if (numberOfCorrectAnswer.size() != 0) {
 
+                    if (numberOfCorrectAnswer.get(counter) == x) {
+                        Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
+                        score++;
+
+                    } else {
+                        Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    }
+                    counter++;
+                    askQuestion(counter);
                 } else {
-                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    countAbcd(x);
                 }
-                counter++;
-                askQuestion(counter);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 2;
-                if (numberOfCorrectAnswer.get(counter) == x) {
-                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
-                    score++;
+                if (numberOfCorrectAnswer.size() != 0) {
 
+                    if (numberOfCorrectAnswer.get(counter) == x) {
+                        Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
+                        score++;
+
+                    } else {
+                        Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    }
+                    counter++;
+                    askQuestion(counter);
                 } else {
-                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    countAbcd(x);
                 }
-                counter++;
-                askQuestion(counter);
             }
         });
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int x = 3;
-                if (numberOfCorrectAnswer.get(counter) == x) {
-                    Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
-                    score++;
+                if (numberOfCorrectAnswer.size() != 0) {
 
+                    if (numberOfCorrectAnswer.get(counter) == x) {
+                        Toast.makeText(QuizActivity.this, "DOBRZE", Toast.LENGTH_SHORT).show();
+                        score++;
+
+                    } else {
+                        Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    }
+                    counter++;
+                    askQuestion(counter);
                 } else {
-                    Toast.makeText(QuizActivity.this, "ŹLE", Toast.LENGTH_SHORT).show();
+                    countAbcd(x);
                 }
-                counter++;
-                askQuestion(counter);
             }
         });
+    }
 
+
+    public void countAbcd(int x) {
+        if (abcdList.get(counter).get(x).equals("A")) {
+            abcdAnswers.add("A");
+            abcdValues[0]++;
+            Toast.makeText(QuizActivity.this, "A", Toast.LENGTH_SHORT).show();
+        } else if (abcdList.get(counter).get(x).equals("B")) {
+            abcdAnswers.add("B");
+            abcdValues[1]++;
+            Toast.makeText(QuizActivity.this, "B", Toast.LENGTH_SHORT).show();
+        } else if (abcdList.get(counter).get(x).equals("C")) {
+            abcdAnswers.add("C");
+            abcdValues[2]++;
+            Toast.makeText(QuizActivity.this, "C", Toast.LENGTH_SHORT).show();
+        } else if (abcdList.get(counter).get(x).equals("D")) {
+            abcdAnswers.add("D");
+            abcdValues[3]++;
+            Toast.makeText(QuizActivity.this, "D", Toast.LENGTH_SHORT).show();
+        }
+        counter++;
+        askQuestion(counter);
 
     }
-//        button0.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-    //My logic for Button goes in here
-
-//                if (mButtonChoice1.getText() == mAnswer){
-//                    mScore = mScore + 1;
-//                    updateScore(mScore);
-//                    updateQuestion();
-//                    //This line of code is optiona
-//                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
-//
-//                }else {
-//                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
-//                }
-//            }
-//        });
-
-    //End of Button Listener for Button1
-
-    //Start of Button Listener for Button2
-//        button1.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-    //My logic for Button goes in here
-
-//                if (mButtonChoice2.getText() == mAnswer){
-//                    mScore = mScore + 1;
-//                    updateScore(mScore);
-//                    updateQuestion();
-//                    //This line of code is optiona
-//                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
-//
-//                }else {
-//                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
-//                }
-//            }
-//        });
-
-    //End of Button Listener for Button2
-
-
-    //Start of Button Listener for Button3
-//        button2.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-    //My logic for Button goes in here
-
-//                if (mButtonChoice3.getText() == mAnswer){
-//                    mScore = mScore + 1;
-//                    updateScore(mScore);
-//                    updateQuestion();
-//                    //This line of code is optiona
-//                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
-//
-//                }else {
-//                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
-//                    updateQuestion();
-//                }
-//            }
-//        });
-
-    //End of Button Listener for Button3
-
-    //    }
-//    int[] toIntArray(List<Integer> list) {
-//        int[] ret = new int[list.size()];
-//        for (int i = 0; i < ret.length; i++)
-//            ret[i] = list.get(i);
-//        return ret;
-//    }
 
     public void askQuestion(int counter) {
 
         if (questionsList.size() < counter + 1) {
             Intent it = new Intent(QuizActivity.this, FinalActivity.class);
-            it.putExtra("score", score);
+            if (numberOfCorrectAnswer.size() != 0) {
+                it.putExtra("score", score);
+                it.putExtra("scoreMax", questionsList.size());
 
+            } else {
+                //Finding which value (A,B,C,D) has the biggest value
+                int maxIndex = 0;
+                for (int i = 1; i < abcdValues.length; i++) {
+                    int newnumber = abcdValues[i];
+                    if ((newnumber > abcdValues[maxIndex])) {
+                        maxIndex = i;
+                    }
+                }
+                String content = flagContent.get(maxIndex);
+                String title = flagTitle.get(maxIndex);
+                it.putExtra("abcd1", content);
+                it.putExtra("abcd2", title);
+            }
             startActivity(it);
+
         }
         answersForOneQ = new ArrayList<>(answersList.get(counter));
+        progressBar.setProgress(progress);
+        int x = 100 / questionsList.size();
+        progress = progress + x;
 
-
-// x - number of the correct answer
         textView.setText(questionsList.get(counter));
         button0.setText(answersForOneQ.get(0));
         button1.setText(answersForOneQ.get(1));
         button2.setText(answersForOneQ.get(2));
-        button3.setText(answersForOneQ.get(3));
-
-//startActivity
-//        Toast.makeText(QuizActivity.this, x, Toast.LENGTH_SHORT).show();
-
-
-//        askQuestion();
-    }
-
-    public void onClick(View v) {
-        startActivity(new Intent(this, QuizModel.class));
-        finish();
+        if (answersForOneQ.size() > 3) {
+            button3.setText(answersForOneQ.get(3));
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
